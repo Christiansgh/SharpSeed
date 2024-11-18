@@ -44,7 +44,7 @@ jobs:
     - name: Set environment variable
       run: echo SEMVER=$(dotnet-gitversion /showvariable semver) >> $GITHUB_ENV 
     - name: Output found semantic version
-      run: echo SemVer: ${{ env.SEMVER }}
+      run: "echo SemVer: ${{ env.SEMVER }}"
 
     # Tag the build
     - name: Tag commit with version
