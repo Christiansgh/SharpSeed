@@ -25,7 +25,7 @@ jobs:
   
   # Runs the full release cycle. Is run if a pull request into master is merged.
   full-release:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
     # Initial setup
