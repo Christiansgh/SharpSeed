@@ -1,0 +1,32 @@
+[*.cs]
+#################################################
+#           Braces, Parens                      #
+#################################################
+csharp_new_line_before_open_brace = none
+csharp_new_line_before_else = false
+csharp_new_line_before_catch = false
+csharp_new_line_before_finally = false
+csharp_new_line_before_members_in_object_initializers = false
+csharp_new_line_before_members_in_anonymous_types = false
+csharp_new_line_between_query_expression_clauses = false
+
+#################################################
+#           Style                               #
+#################################################
+csharp_style_namespace_declarations = file_scoped
+csharp_style_prefer_primary_constructors = false
+#Terniary return statement: return conditional ? "hello" : "world"
+dotnet_style_prefer_conditional_expression_over_return = false 
+csharp_prefer_static_anonymous_function = false
+csharp_style_var_when_type_is_apparent = true
+csharp_style_var_for_built_in_types = true
+csharp_style_var_elsewhere = false
+# Initialize collections like this: new List<string> {"hello", "world"}; Rather than = ["hello", world]; The second is MUCH less explicit about which collection it is.
+dotnet_style_collection_initializer = true
+dotnet_style_prefer_collection_expression = false
+
+#################################################
+#           Diagnostics                         #
+#################################################
+dotnet_diagnostic.IL2026.severity = none
+dotnet_diagnostic.CA1707.severity = none
