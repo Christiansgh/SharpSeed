@@ -1,0 +1,66 @@
+env:
+  BUILD_CONFIGURATION: 'Release'
+  RELEASE_NAME: 'SharpSeed'
+
+on: 
+  pull_request: 
+
+  push:         
+    branches:   
+      - main  
+
+jobs: 
+  # Just builds to validate that there are no compilation errors.
+  validate-build:
+    if: github.event_name == 'pull_requst'
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 8.x
+    - name: Validate Build
+      run: dotnet build --configuration $BUILD_CONFIGURATION
+  
+  # Runs the full release cycle. Is run if a pull request into master is merged.
+  full-release:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    steps:
+    # Initial setup
+    - name: Checkout repo 
+      uses: actions/checkout@v2
+      with: 
+        fetch-depth: 0 # Necessary for GitVersion to work properly.
+
+    # Ensure all tags are fetched from the repo.
+    - name: Fetch all branches, tags and histories.
+      run: git fetch --all && git checkout master
+
+    # GitVersion setup
+    - name: Install GitVersion.Tool
+      run: dotnet tool install --global GitVersion.Tool --version 5.*
+    - name: Set environment variable
+      run: echo SEMVER=$(dotnet-gitversion /showvariable semver) >> $GITHUB_ENV 
+    - name: Output found semantic version
+      run: echo SemVer: ${{ env.SEMVER }}
+
+    # Tag the build
+    - name: Tag commit with version
+      run: |
+        if git rev-parse "refs/tags/${{ env.SEMVER }}" >/dev/null 2>&1; then
+          echo "Tag ${{ env.SEMVER }} already exists. Skipping tagging."
+        else
+          git tag ${{ env.SEMVER }} && git push origin ${{ env.SEMVER }}
+        fi
+
+    # Create the release
+    - name: Release the build
+      env: 
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        gh release create "${{ env.SEMVER }}" \
+          --repo="$GITHUB_REPOSITORY" \
+          --title="${GITHUB_REPOSITORY#*/} ${{env.SEMVER}}" \
+          --generate-notes
